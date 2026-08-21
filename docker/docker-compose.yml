@@ -15,6 +15,8 @@ services:
         dockerfile: docker/php/Dockerfile
       volumes_from:
         - opencatsdata
+      volumes:
+        - ./php/conf.d/zz-opencats.ini:/usr/local/etc/php/conf.d/zz-opencats.ini:ro
 
     opencatsdata:
       container_name: opencats_data
@@ -34,7 +36,8 @@ services:
         - MYSQL_PASSWORD=dev
         - MYSQL_DATABASE=cats
       volumes:
-        - ../test/data:/docker-entrypoint-initdb.d
+        - ../db/cats_schema.sql:/docker-entrypoint-initdb.d/000_schema.sql:ro
+        - ../db/cats_demo_data.sql:/docker-entrypoint-initdb.d/001_demo.sql:ro
         - ./persist/mysql:/var/lib/mysql
 
     phpmyadmin:
