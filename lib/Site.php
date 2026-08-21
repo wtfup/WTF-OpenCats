@@ -82,7 +82,7 @@ class Site
                 time_zone = %s,
                 date_format_ddmmyy = %s,
                 time_format_24 = %s",
-            $this->_db->makeQueryInteger($timeZone),
+            $this->_db->makeQueryDouble($timeZone, 2),
             ($isDMY ? 1 : 0),
             ($isTimeFormat24 ? 1 : 0)
         );

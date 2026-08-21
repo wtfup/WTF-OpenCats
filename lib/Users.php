@@ -53,6 +53,26 @@ define('ADD_USER_DB_ERROR',          -3);
 /* Password for user authenticated against LDAP */ 
 define('LDAPUSER_PASSWORD',          '_LDAPUSER_');
 
+/* Login throttling. A login attempt is refused when either the account or the
+ * source IP address has accumulated at least this many failed attempts, since
+ * its own last successful login, inside the lookback window. Each value may be
+ * overridden from config.php.
+ */
+if (!defined('LOGIN_LOCKOUT_WINDOW_MINUTES'))
+{
+    define('LOGIN_LOCKOUT_WINDOW_MINUTES',       15);
+}
+
+if (!defined('LOGIN_LOCKOUT_MAX_ACCOUNT_FAILURES'))
+{
+    define('LOGIN_LOCKOUT_MAX_ACCOUNT_FAILURES',  5);
+}
+
+if (!defined('LOGIN_LOCKOUT_MAX_IP_FAILURES'))
+{
+    define('LOGIN_LOCKOUT_MAX_IP_FAILURES',      20);
+}
+
 /**
  *	Users Library
  *	@package    CATS
@@ -916,6 +936,112 @@ class Users
     }
 
     /**
+     * Returns true if further login attempts must be refused because too many
+     * recent attempts for this username, or from this IP address, failed.
+     *
+     * Only failures newer than the last *successful* login for the same key
+     * are counted, so a successful login clears the counter without deleting
+     * any user_login history rows. Both keys are checked: the per-account
+     * counter stops a targeted brute force, the per-IP counter stops
+     * credential stuffing that sprays many different usernames.
+     *
+     * @param string Username being authenticated.
+     * @param string Source IP address of the request.
+     * @return boolean Is this login attempt currently locked out?
+     */
+    public function isLoginLockedOut($username, $ip)
+    {
+        $windowMinutes = $this->_db->makeQueryInteger(LOGIN_LOCKOUT_WINDOW_MINUTES);
+
+        $userID = $this->getIDByUsername($username);
+
+        if ($userID !== false)
+        {
+            $userIDString = $this->_db->makeQueryInteger($userID);
+
+            $sql = sprintf(
+                "SELECT
+                    COUNT(*) AS failures
+                FROM
+                    user_login
+                WHERE
+                    user_login.user_id = %s
+                AND
+                    user_login.successful = 0
+                AND
+                    user_login.date > DATE_SUB(NOW(), INTERVAL %s MINUTE)
+                AND
+                    user_login.date > COALESCE(
+                        (
+                            SELECT
+                                MAX(lastSuccess.date)
+                            FROM
+                                user_login AS lastSuccess
+                            WHERE
+                                lastSuccess.user_id = %s
+                            AND
+                                lastSuccess.successful = 1
+                        ),
+                        '1000-01-01 00:00:00'
+                    )",
+                $userIDString,
+                $windowMinutes,
+                $userIDString
+            );
+
+            $rs = $this->_db->getAssoc($sql);
+
+            if (!empty($rs) &&
+                (int) $rs['failures'] >= LOGIN_LOCKOUT_MAX_ACCOUNT_FAILURES)
+            {
+                return true;
+            }
+        }
+
+        if (empty($ip))
+        {
+            return false;
+        }
+
+        $ipString = $this->_db->makeQueryString($ip);
+
+        $sql = sprintf(
+            "SELECT
+                COUNT(*) AS failures
+            FROM
+                user_login
+            WHERE
+                user_login.ip = %s
+            AND
+                user_login.successful = 0
+            AND
+                user_login.date > DATE_SUB(NOW(), INTERVAL %s MINUTE)
+            AND
+                user_login.date > COALESCE(
+                    (
+                        SELECT
+                            MAX(lastSuccess.date)
+                        FROM
+                            user_login AS lastSuccess
+                        WHERE
+                            lastSuccess.ip = %s
+                        AND
+                            lastSuccess.successful = 1
+                    ),
+                    '1000-01-01 00:00:00'
+                )",
+            $ipString,
+            $windowMinutes,
+            $ipString
+        );
+
+        $rs = $this->_db->getAssoc($sql);
+
+        return (!empty($rs) &&
+            (int) $rs['failures'] >= LOGIN_LOCKOUT_MAX_IP_FAILURES);
+    }
+
+    /**
      * Creates a login history entry.
      *
      * @param integer User's User ID.
@@ -1216,7 +1342,7 @@ class Users
     {
         if ($this->isLegacyPasswordHash($storedHash))
         {
-            if (md5($password) !== $storedHash)
+            if (!hash_equals(strtolower((string) $storedHash), md5($password)))
             {
                 return false;
             }

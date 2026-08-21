@@ -1416,7 +1416,7 @@ class Candidates
         
         if($params['firstName'] == "1")
         {
-            $update .= "first_name = '" . $rs['firstName']."'";
+            $update .= "first_name = " . $this->_db->makeQueryString($rs['firstName']);
             $comma = true;
         }
         if($params['middleName'] == "1")
@@ -1425,7 +1425,7 @@ class Candidates
             {
                 $update .= ", ";
             }
-            $update .= "middle_name = '" . $rs['middleName']."'";
+            $update .= "middle_name = " . $this->_db->makeQueryString($rs['middleName']);
             $comma = true;
         }
         if($params['lastName'] == "1")
@@ -1434,7 +1434,7 @@ class Candidates
             {
                 $update .= ", ";
             }
-            $update .= "last_name = '" . $rs['lastName']."'";
+            $update .= "last_name = " . $this->_db->makeQueryString($rs['lastName']);
             $comma = true;
         }
         if($params['phoneCell'] == "1")
@@ -1443,7 +1443,7 @@ class Candidates
             {
                 $update .= ", ";
             }
-            $update .= "phone_cell = '" . $rs['phoneCell']."'";
+            $update .= "phone_cell = " . $this->_db->makeQueryString($rs['phoneCell']);
             $comma = true;
         }
         if($params['phoneWork'] == "1")
@@ -1452,7 +1452,7 @@ class Candidates
             {
                 $update .= ", ";
             }
-            $update .= "phone_work = '" . $rs['phoneWork']."'";
+            $update .= "phone_work = " . $this->_db->makeQueryString($rs['phoneWork']);
             $comma = true;
         }
         if($params['phoneHome'] == "1")
@@ -1461,7 +1461,7 @@ class Candidates
             {
                 $update .= ", ";
             }
-            $update .= "phone_home = '" . $rs['phoneHome']."'";
+            $update .= "phone_home = " . $this->_db->makeQueryString($rs['phoneHome']);
             $comma = true;
         }
         if($params['address'] == "1")
@@ -1470,7 +1470,7 @@ class Candidates
             {
                 $update .= ", ";
             }
-            $update .= "address = '" . $rs['address'] . "', address2 = '" . $rs['address2'] . "', city = '" . $rs['city'] . "', zip = '" . $rs['zip'] . "', state = '" . $rs['state'] . "'";
+            $update .= "address = " . $this->_db->makeQueryString($rs['address']) . ", address2 = " . $this->_db->makeQueryString($rs['address2']) . ", city = " . $this->_db->makeQueryString($rs['city']) . ", zip = " . $this->_db->makeQueryString($rs['zip']) . ", state = " . $this->_db->makeQueryString($rs['state']);
             $comma = true;
         }
         if($params['website'] == "1")
@@ -1479,7 +1479,7 @@ class Candidates
             {
                 $update .= ", ";
             }
-            $update .= "web_site = '" . $rs['webSite'] . "'";
+            $update .= "web_site = " . $this->_db->makeQueryString($rs['webSite']);
             $comma = true;
         }
         if(sizeof($params['emails']) == 1)
@@ -1488,7 +1488,7 @@ class Candidates
             {
                 $update .= ", ";
             }
-            $update .= "email1 = '" . $params['emails'][0]."'";
+            $update .= "email1 = " . $this->_db->makeQueryString($params['emails'][0]);
             $comma = true;
         }else if(sizeof($params['emails']) == 2)
         {
@@ -1497,8 +1497,8 @@ class Candidates
                 $update .= ", ";
                 $comma = false;
             }
-            $update .= "email1 = '" . $params['emails'][0] . "', ";
-            $update .= "email2 = '" . $params['emails'][1] . "', ";
+            $update .= "email1 = " . $this->_db->makeQueryString($params['emails'][0]) . ", ";
+            $update .= "email2 = " . $this->_db->makeQueryString($params['emails'][1]) . ", ";
             $comma = false;
         }
         if($comma){
@@ -1507,37 +1507,37 @@ class Candidates
         $dateAvailable = $rs['dateAvailable'];
         $dateParts = explode("-", $dateAvailable);
         $dateAvailable = "20" . $dateParts[2] . "-" . $dateParts[0] . "-" . $dateParts[1] . " 00:00:00";
-        $update .= "is_active = " . $rs['isActive'] . ", " .
-                    "current_employer = '" . $rs['currentEmployer'] . "', " .
-                    "current_pay = '" . $rs['currentPay'] . "', " .     
-                    "desired_pay = '" . $rs['desiredPay'] . "', " .  
-                    "can_relocate = " . $rs['canRelocate'] . ", " .  
-                    "best_time_to_call = '" . $rs['bestTimeToCall'] . "', " .
-                    "is_hot = " . $rs['isHot'] . ", " . 
+        $update .= "is_active = " . $this->_db->makeQueryInteger($rs['isActive']) . ", " .
+                    "current_employer = " . $this->_db->makeQueryString($rs['currentEmployer']) . ", " .
+                    "current_pay = " . $this->_db->makeQueryString($rs['currentPay']) . ", " .     
+                    "desired_pay = " . $this->_db->makeQueryString($rs['desiredPay']) . ", " .  
+                    "can_relocate = " . $this->_db->makeQueryInteger($rs['canRelocate']) . ", " .  
+                    "best_time_to_call = " . $this->_db->makeQueryString($rs['bestTimeToCall']) . ", " .
+                    "is_hot = " . $this->_db->makeQueryInteger($rs['isHot']) . ", " . 
                     "date_modified = NOW()";
         $comma = true;
         if($rs['source'] != "" && $rs['source'] != "(none)")
         {
             if($comma){$update .= ", ";}
-            $update.= "source = IFNULL(CONCAT(source, ', ".$rs['source'] . "'), '" . $rs['source'] . "')";
+            $update.= "source = IFNULL(CONCAT(source, " . $this->_db->makeQueryString(', ' . $rs['source']) . "), " . $this->_db->makeQueryString($rs['source']) . ")";
             $comma = true;
         }
         if($rs['keySkills'] != "")
         {   
             if($comma){$update .= ", ";}    
-            $update .= "key_skills = IFNULL(CONCAT(key_skills, ', ".$rs['keySkills']."'), '" . $rs['keySkills'] . "')";
+            $update .= "key_skills = IFNULL(CONCAT(key_skills, " . $this->_db->makeQueryString(', ' . $rs['keySkills']) . "), " . $this->_db->makeQueryString($rs['keySkills']) . ")";
             $comma = true;
         }
         if($rs['notes'] != "")
         { 
             if($comma){$update .= ", ";}  
-            $update .= "notes = IFNULL(CONCAT(notes, ', ".$rs['notes']."'), '" . $rs['notes'] . "')";
+            $update .= "notes = IFNULL(CONCAT(notes, " . $this->_db->makeQueryString(', ' . $rs['notes']) . "), " . $this->_db->makeQueryString($rs['notes']) . ")";
             $comma = true;
         }
         if($rs['date_available'] != "")
         { 
             if($comma){$update .= ", ";}  
-            $update .= "date_available = '".$dateAvailable."' ";
+            $update .= "date_available = ".$this->_db->makeQueryString($dateAvailable)." ";
         }
         
         $sql = sprintf(

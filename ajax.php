@@ -51,6 +51,7 @@ header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
 if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'POST')
 {
     @session_name(CATS_SESSION_NAME);
+    CATSSession::applySecureCookieParams();
     session_start();
 }
 

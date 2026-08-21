@@ -317,8 +317,8 @@ class DateUtility
             {
                 $timeZoneOffset = $_SESSION['CATS']->getTimeZoneOffset();
                 $date = mktime(
-                    date('H') + $timeZoneOffset,
-                    date('i'),
+                    (int) date('H'),
+                    (int) date('i') + (int) round($timeZoneOffset * 60),
                     date('s'),
                     date('m'),
                     date('d'),
@@ -377,8 +377,8 @@ class DateUtility
         }
 
         $unixTime = mktime(
-            date('H', $date) + $_SESSION['CATS']->getTimeZoneOffset(),
-            date('i', $date),
+            (int) date('H', $date),
+            (int) date('i', $date) + (int) round($_SESSION['CATS']->getTimeZoneOffset() * 60),
             date('s', $date),
             date('m', $date),
             date('d', $date),

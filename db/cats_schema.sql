@@ -909,7 +909,7 @@ CREATE TABLE `site` (
   `account_active` INT(1) NOT NULL DEFAULT '1',
   `account_deleted` INT(1) NOT NULL DEFAULT '0',
   `reason_disabled` TEXT CHARACTER SET utf8mb4,
-  `time_zone` INT(5) DEFAULT '0',
+  `time_zone` DECIMAL(4,2) DEFAULT '0.00',
   `time_zone_iana` VARCHAR(64) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'UTC',
   `time_format_24` INT(1) DEFAULT '0',
   `date_format_ddmmyy` INT(1) DEFAULT '0',

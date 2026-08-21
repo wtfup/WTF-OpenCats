@@ -346,7 +346,7 @@ class Calendar
             )
             VALUES (
                 %s,
-                DATE_SUB(%s, INTERVAL %s HOUR),
+                DATE_SUB(%s, INTERVAL %s MINUTE),
                 %s,
                 %s,
                 %s,
@@ -364,7 +364,7 @@ class Calendar
             )",
             $this->_db->makeQueryInteger($type),
             $this->_db->makeQueryString($date),
-            $this->_db->makeQueryInteger($timeZoneOffset),
+            $this->_db->makeQueryInteger(round($timeZoneOffset * 60)),
             $this->_db->makeQueryString($description),
             ($allDay ? '1' : '0'),
             $this->_db->makeQueryInteger($enteredBy),
@@ -431,7 +431,7 @@ class Calendar
                 calendar_event
             SET
                 type             = %s,
-                date             = DATE_SUB(%s, INTERVAL %s HOUR),
+                date             = DATE_SUB(%s, INTERVAL %s MINUTE),
                 description      = %s,
                 all_day          = %s,
                 data_item_id     = %s,
@@ -448,7 +448,7 @@ class Calendar
                 calendar_event_id = %s",
             $this->_db->makeQueryInteger($type),
             $this->_db->makeQueryString($date),
-            $this->_db->makeQueryInteger($timeZoneOffset),
+            $this->_db->makeQueryInteger(round($timeZoneOffset * 60)),
             $this->_db->makeQueryString($description),
             ($allDay ? '1' : '0'),
             $this->_db->makeQueryInteger($dataItemID),

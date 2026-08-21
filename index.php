@@ -73,6 +73,7 @@ include_once(LEGACY_ROOT . '/lib/SchemaMigrationStatus.php');
 
 /* Give the session a unique name to avoid conflicts and start the session. */
 @session_name(CATS_SESSION_NAME);
+CATSSession::applySecureCookieParams();
 session_start();
 
 /* Try to prevent caching. */

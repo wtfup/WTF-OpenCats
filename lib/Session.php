@@ -86,6 +86,42 @@ class CATSSession
     private $_loggedInScript = '';
 
     /**
+     * Applies hardened cookie attributes to the PHP session cookie: HttpOnly
+     * and SameSite=Lax always, and Secure only when the request actually
+     * arrived over TLS (so plain-HTTP development installs keep working).
+     * Must be called BEFORE session_start().
+     *
+     * @return void
+     */
+    public static function applySecureCookieParams()
+    {
+        /* Cookie parameters can only be changed before the session starts. */
+        if (session_status() === PHP_SESSION_ACTIVE)
+        {
+            return;
+        }
+
+        $isSSL = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== '' &&
+                  strtolower((string) $_SERVER['HTTPS']) !== 'off') ||
+                 (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+                  strtolower((string) $_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+                 (isset($_SERVER['HTTP_X_FORWARDED_SSL']) &&
+                  strtolower((string) $_SERVER['HTTP_X_FORWARDED_SSL']) === 'on') ||
+                 (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
+
+        $params = session_get_cookie_params();
+
+        session_set_cookie_params(array(
+            'lifetime' => $params['lifetime'],
+            'path'     => ($params['path'] === '' ? '/' : $params['path']),
+            'domain'   => $params['domain'],
+            'secure'   => $isSSL,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ));
+    }
+
+    /**
      * Returns this session's MRU object, and creates one if it doesn't exist.
      *
      * @return object This session's MRU object.
@@ -583,7 +619,8 @@ class CATSSession
      */
     public function setTimeDateLocalization($timeZone, $isDMY, $isTimeFormat24 = false)
     {
-        $timeZone = (integer) $timeZone;
+        /* Time zones may be fractional (e.g. +05:30 India, +05:45 Nepal). */
+        $timeZone = (float) $timeZone;
 
         $this->_timeZone       = $timeZone;
         $this->_timeZoneOffset = $timeZone - OFFSET_GMT;
@@ -627,6 +664,24 @@ class CATSSession
 
         /* Is the login information supplied correct? Get the status flag. */
         $users = new Users();
+
+        /* Throttling: refuse the attempt outright (without even checking the
+         * password) if this account or this source IP address has recently
+         * accumulated too many failed logins.
+         */
+        if ($users->isLoginLockedOut(
+                $username,
+                isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : ''))
+        {
+            $this->_isLoggedIn = false;
+            $this->_loginError = sprintf(
+                'Too many failed login attempts. Please try again in %d minutes.',
+                LOGIN_LOCKOUT_WINDOW_MINUTES
+            );
+
+            return;
+        }
+
         $loginStatus = $users->isCorrectLogin($username, $password);
 
         if ($loginStatus == LOGIN_INVALID_USER)
@@ -852,6 +907,17 @@ class CATSSession
 
                 // Start output buffering to prevent "Headers Already Sent" errors
                 ob_start();
+
+                /* Session fixation defence: the authenticated session must not
+                 * keep the session ID that was presented before login. This
+                 * MUST happen before getCookie() is used below, and before the
+                 * session ID is persisted anywhere, because getCookie() embeds
+                 * session_id().
+                 */
+                if (session_status() === PHP_SESSION_ACTIVE && !headers_sent())
+                {
+                    session_regenerate_id(true);
+                }
 
                 $cookieValue = $this->getCookie();
                 $expires = time() + 3600;  // Example expiration time, adjust as needed

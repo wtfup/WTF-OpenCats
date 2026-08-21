@@ -2045,6 +2045,10 @@ class CATSSchema
                     );
             ',
 
+            '394' => '
+                ALTER TABLE site MODIFY `time_zone` DECIMAL(4,2) DEFAULT \'0.00\';
+            ',
+
         );
     }
 }

@@ -205,6 +205,10 @@ class SecureAJAXInterface extends AJAXInterface
         if (session_status() !== PHP_SESSION_ACTIVE)
         {
             @session_name(CATS_SESSION_NAME);
+            if (class_exists('CATSSession'))
+            {
+                CATSSession::applySecureCookieParams();
+            }
             session_start();
         }
 

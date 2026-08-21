@@ -248,12 +248,12 @@ class ActivityEntries
                 "UPDATE
                     activity
                 SET
-                    date_occurred = DATE_SUB(%s, INTERVAL %s HOUR),
+                    date_occurred = DATE_SUB(%s, INTERVAL %s MINUTE),
                     date_modified = NOW()
                 WHERE
                     activity_id = %s",
                 $this->_db->makeQueryString($date),
-                $this->_db->makeQueryInteger($timezoneOffset),
+                $this->_db->makeQueryInteger(round($timezoneOffset * 60)),
                 $this->_db->makeQueryInteger($activityID)
             );
 

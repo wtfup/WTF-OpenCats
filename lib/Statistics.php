@@ -968,9 +968,10 @@ class Statistics
 
         if ($this->_timeZoneOffset != 0)
         {
-            $criteria = str_replace('CURDATE()', 'DATE_ADD(CURDATE(), INTERVAL ' . $this->_timeZoneOffset . ' HOUR)', $criteria);
-            $criteria = str_replace('NOW()', 'DATE_ADD(NOW(), INTERVAL ' . $this->_timeZoneOffset . ' HOUR)', $criteria);
-            $criteria = str_replace($dateField, 'DATE_ADD(' . $dateField . ', INTERVAL ' . $this->_timeZoneOffset . ' HOUR)', $criteria);
+            $timeZoneOffsetMinutes = (int) round($this->_timeZoneOffset * 60);
+            $criteria = str_replace('CURDATE()', 'DATE_ADD(CURDATE(), INTERVAL ' . $timeZoneOffsetMinutes . ' MINUTE)', $criteria);
+            $criteria = str_replace('NOW()', 'DATE_ADD(NOW(), INTERVAL ' . $timeZoneOffsetMinutes . ' MINUTE)', $criteria);
+            $criteria = str_replace($dateField, 'DATE_ADD(' . $dateField . ', INTERVAL ' . $timeZoneOffsetMinutes . ' MINUTE)', $criteria);
         }
 
         return $criteria;

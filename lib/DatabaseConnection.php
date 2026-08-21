@@ -687,12 +687,12 @@ class DatabaseConnection
                 if ($this->_timeZone > 0)
                 {
                     $working = str_replace('DATE_FORMAT(', 'DATE_FORMAT(DATE_ADD(', $working);
-                    $working .= ', INTERVAL ' . $this->_timeZone . ' HOUR)';
+                    $working .= ', INTERVAL ' . (int) round($this->_timeZone * 60) . ' MINUTE)';
                 }
                 else if ($this->_timeZone < 0)
                 {
                     $working = str_replace('DATE_FORMAT(', 'DATE_FORMAT(DATE_SUB(', $working);
-                    $working .= ', INTERVAL ' . ($this->_timeZone * -1) . ' HOUR)';
+                    $working .= ', INTERVAL ' . (int) round($this->_timeZone * -60) . ' MINUTE)';
                 }
             }
             $newQuery .= $working;
