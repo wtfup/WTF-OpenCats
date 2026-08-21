@@ -1,0 +1,48 @@
+# Production reverse proxy for WTF-OpenCats.
+# {$SITE_ADDRESS} is supplied by docker/.env — set it to the public hostname
+# (e.g. careers.wtfgyms.com) and Caddy provisions a Let's Encrypt cert
+# automatically. Set it to :80 for a plain-HTTP smoke test.
+
+{$SITE_ADDRESS} {
+	root * /var/www/public
+	encode gzip
+
+	# --- Hard blocks -------------------------------------------------------
+	# Candidate uploads (resumes, ID scans) physically live under the docroot
+	# because OpenCATS hardcodes relative "attachments/" paths. They must never
+	# be fetchable directly -- the only legitimate path is
+	# index.php?m=attachments&a=getAttachment, which enforces auth via
+	# CandidateAuthorization. The upstream attachments/.htaccess is Apache-only
+	# and does nothing here, so this block is the actual control.
+	@forbidden path /attachments/* /temp/* /upload/* /db/* /docker/* /test/* /src/* /vendor/* /.git/*
+	respond @forbidden 404
+
+	# Installer and diagnostics: unauthenticated info disclosure. Removed from
+	# the box at deploy time as well; this is defence in depth.
+	@installer path /installtest.php /installwizard.php /rebuild_old_docs.php
+	respond @installer 404
+
+	# Config and dotfiles.
+	@sensitive path /config.php /composer.json /composer.lock /*.md /.* 
+	respond @sensitive 404
+
+	# --- Routing -----------------------------------------------------------
+	# Candidates landing on the bare hostname get the public job board.
+	# Staff reach the ATS at /index.php.
+	redir / /careers/ 302
+
+	php_fastcgi php:9000
+	file_server
+
+	header {
+		X-Frame-Options "SAMEORIGIN"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+
+	log {
+		output file /var/log/caddy/access.log
+	}
+}

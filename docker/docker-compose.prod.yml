@@ -1,0 +1,65 @@
+# Production stack for WTF-OpenCats.
+#
+# Deliberately different from docker/docker-compose.yml (the dev stack), which
+# publishes MariaDB on 3306 and bundles phpMyAdmin on 8080. Neither is exposed
+# here. All mutable state lives under /srv/cats on the host so that rebuilding
+# the containers -- or the box -- never destroys candidate data.
+
+services:
+  caddy:
+    image: caddy:2-alpine
+    container_name: wtf_cats_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file: .env
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/opencats:/var/www/public:ro
+      - caddy_data:/data
+      - caddy_config:/config
+      - /srv/cats/logs/caddy:/var/log/caddy
+    depends_on:
+      - php
+
+  php:
+    build:
+      context: ..
+      dockerfile: docker/php/Dockerfile
+    container_name: wtf_cats_php
+    restart: unless-stopped
+    volumes:
+      - /opt/opencats:/var/www/public
+      - ./php/conf.d/zz-opencats.ini:/usr/local/etc/php/conf.d/zz-opencats.ini:ro
+      # State that must outlive the container/checkout:
+      - /srv/cats/config/config.php:/var/www/public/config.php
+      - /srv/cats/attachments:/var/www/public/attachments
+      - /srv/cats/temp:/var/www/public/temp
+      - /srv/cats/upload:/var/www/public/upload
+      - /srv/cats/sessions:/var/lib/php/sessions
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  mariadb:
+    image: mariadb:11
+    container_name: wtf_cats_mariadb
+    restart: unless-stopped
+    # NOTE: no `ports:` -- the database is reachable only on the compose
+    # network, never from the internet.
+    env_file: .env
+    environment:
+      - MARIADB_DATABASE=cats
+    volumes:
+      - /srv/cats/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+volumes:
+  caddy_data:
+  caddy_config:
