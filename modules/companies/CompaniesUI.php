@@ -389,7 +389,12 @@ class CompaniesUI extends UserInterface
         /* Contacts for this company */
         $contacts   = new Contacts();
         $contactsRS = $contacts->getAll(-1, $companyID);
-        $contactsRSWC = null;
+        /* Must be an array, not null: Show.tpl does count() on this, which is a
+         * fatal TypeError on PHP 8 when the value is null. That happens for any
+         * company with no contacts at all (i.e. every newly created company),
+         * and also when every contact has left the company, since only current
+         * contacts are appended below. */
+        $contactsRSWC = array();
 
         if (!empty($contactsRS))
         {
