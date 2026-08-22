@@ -121,6 +121,7 @@ INSERT INTO career_portal_template_site (career_portal_name, setting, value) VAL
 <footer class="site-footer"><div class="wrap">
   <p><strong style="color:#f4f4f2;">WTF Gyms</strong> &mdash; we are hiring across every centre.</p>
   <p>All open roles are listed on this page. <a href="index.php?m=careers&amp;p=showAll">Browse openings</a> or visit <a href="https://www.wtfgyms.com" target="_blank" rel="noopener noreferrer">wtfgyms.com</a>.</p>
+  <p style="margin-top:20px;font-size:13px;"><a href="/login">WTF staff login</a></p>
 </div></footer>
 ');
 

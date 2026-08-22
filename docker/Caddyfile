@@ -28,10 +28,29 @@
 
 	# --- Routing -----------------------------------------------------------
 	# Candidates landing on the bare hostname get the public job board.
-	# Staff reach the ATS at /index.php.
 	redir / /careers/ 302
 
-	php_fastcgi php:9000
+	# Clean, memorable entry points for staff. Without these the only way in is
+	# /index.php?m=login, which nobody can be expected to remember or discover.
+	redir /login /index.php?m=login 302
+	redir /login/ /index.php?m=login 302
+	redir /ats /index.php?m=login 302
+	redir /ats/ /index.php?m=login 302
+
+	# NOTE the explicit try_files. The php_fastcgi default is
+	#   try_files {path} {path}/index.php index.php
+	# and that trailing "index.php" is a catch-all: ANY unknown path (/careers/login,
+	# /foo/bar, anything) gets served by the root index.php. The app then renders
+	# fine, but the browser's base URL is the fake directory, and OpenCATS emits
+	# RELATIVE asset paths ("images/...", "css/..."). Those resolve against the fake
+	# directory, every stylesheet and script 404s, and the user sees a completely
+	# unstyled page that looks like the product is broken.
+	#
+	# OpenCATS routes purely on query strings against real .php files, so the
+	# catch-all buys nothing. Dropping it makes unknown paths honestly 404.
+	php_fastcgi php:9000 {
+		try_files {path} {path}/index.php
+	}
 	file_server
 
 	header {
