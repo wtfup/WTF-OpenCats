@@ -10,9 +10,9 @@ DELETE FROM career_portal_template_site WHERE career_portal_name = 'WTF Gyms';
 
 INSERT INTO career_portal_template_site (career_portal_name, setting, value) VALUES ('WTF Gyms', 'CSS', '
 *{box-sizing:border-box}
-html,body{margin:0;padding:0;background:#ffffff;color:#16161a;font:400 15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
-a{color:#d8431a;text-decoration:none}
-a:hover{color:#ff5a1f;text-decoration:underline}
+html,body{margin:0;padding:0;background:#ffffff;color:#16161a;font:400 15px/1.65 "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:#D2000B;text-decoration:none}
+a:hover{color:#D2000B;text-decoration:underline}
 img{border:none;max-width:100%}
 h1,h2,h3{margin:0 0 12px 0;line-height:1.2;color:#0f0f12}
 h1{font:800 34px/1.15 "Arial Black","Helvetica Neue",Helvetica,Arial,sans-serif;letter-spacing:-0.5px}
@@ -23,26 +23,26 @@ p{margin:0 0 12px 0}
 .muted{color:#6b6b70}
 
 /* HEADER */
-.site-header{background:#ffffff;border-bottom:1px solid #e3e3e6;position:sticky;top:0;z-index:50}
+.site-header{background:#0A0A0A;border-bottom:3px solid #D2000B;position:sticky;top:0;z-index:50}
+.brand-logo{height:34px;width:auto;display:block}
 .hdr{display:flex;align-items:center;justify-content:space-between;min-height:64px;gap:16px;flex-wrap:wrap}
-.brand{display:flex;align-items:baseline;gap:9px;color:#0f0f12}
-.brand:hover{color:#0f0f12;text-decoration:none}
-.brand-mark{font:800 24px/1 "Arial Black","Helvetica Neue",Helvetica,Arial,sans-serif;color:#ff5a1f;letter-spacing:-1px}
-.brand-sub{font:700 12px/1 Arial,Helvetica,sans-serif;letter-spacing:2.4px;text-transform:uppercase;color:#6b6b70}
+.brand{display:flex;align-items:center;gap:11px;color:#ffffff}
+.brand:hover{color:#ffffff;text-decoration:none}
+.brand-sub{font:700 12px/1 Arial,Helvetica,sans-serif;letter-spacing:2.4px;text-transform:uppercase;color:#b8b8bd}
 .hdr-nav{display:flex;gap:22px;align-items:center;font:600 13px/1 Arial,Helvetica,sans-serif;letter-spacing:.4px;text-transform:uppercase}
-.hdr-nav a{color:#44444a}
-.hdr-nav a:hover{color:#ff5a1f;text-decoration:none}
+.hdr-nav a{color:#d4d4d8}
+.hdr-nav a:hover{color:#ffffff;text-decoration:none}
 
 /* BUTTONS */
-.btn{display:inline-block;background:#ff5a1f;color:#ffffff !important;font:700 14px/1 Arial,Helvetica,sans-serif;letter-spacing:.4px;padding:14px 26px;border-radius:6px;border:none;cursor:pointer;text-transform:uppercase}
-.btn:hover{background:#e04a12;color:#ffffff !important;text-decoration:none}
+.btn{display:inline-block;background:#D2000B;color:#ffffff !important;font:700 14px/1 Arial,Helvetica,sans-serif;letter-spacing:.4px;padding:14px 26px;border-radius:6px;border:none;cursor:pointer;text-transform:uppercase}
+.btn:hover{background:#A80009;color:#ffffff !important;text-decoration:none}
 .btn-lg{padding:16px 34px;font-size:15px}
 
 /* HERO */
 .hero{padding:64px 0 44px 0;border-bottom:1px solid #e3e3e6}
-.eyebrow{font:700 12px/1 Arial,Helvetica,sans-serif;letter-spacing:3px;text-transform:uppercase;color:#d8431a;margin:0 0 16px 0}
+.eyebrow{font:700 12px/1 Arial,Helvetica,sans-serif;letter-spacing:3px;text-transform:uppercase;color:#D2000B;margin:0 0 16px 0}
 .hero h1{font-size:46px;max-width:16em}
-.hero .hl{color:#ff5a1f}
+.hero .hl{color:#D2000B}
 .lede{font-size:17px;color:#44444a;max-width:44em;margin:16px 0 28px 0}
 .stat{display:inline-flex;align-items:center;gap:9px;margin-left:18px;color:#6b6b70;font-size:14px}
 .dot{width:8px;height:8px;border-radius:50%;background:#12a150;display:inline-block}
@@ -60,10 +60,10 @@ table.sortable td{padding:16px 18px;vertical-align:middle;border-top:1px solid #
 tr.rowHeading{background:#f4f4f5;border:none}
 tr.evenTableRow{background:#ffffff}
 tr.oddTableRow{background:#fbfbfc}
-tr.evenTableRow:hover,tr.oddTableRow:hover{background:#fff4ef}
+tr.evenTableRow:hover,tr.oddTableRow:hover{background:#FBF3F3}
 table.sortable td a{font-weight:700}
 a.sortheader,a.sortheader:link,a.sortheader:visited{color:#6b6b70}
-a.sortheader:hover{color:#ff5a1f}
+a.sortheader:hover{color:#D2000B}
 
 /* JOB DETAILS */
 .job-head{padding:22px 0 30px 0;border-bottom:1px solid #e3e3e6;margin-bottom:30px}
@@ -84,21 +84,21 @@ a.sortheader:hover{color:#ff5a1f}
 input:not([type]),input[type=text],input[type=email],input[type=password],input[type=tel],input[type=file],
 .inputBoxName,.inputBoxNormal,.inputBoxArea,select,textarea{width:100%;background:#ffffff;border:1px solid #c9c9cf;border-radius:6px;color:#16161a;padding:12px 13px;font:400 15px/1.4 Arial,Helvetica,sans-serif}
 input:not([type]):focus,input[type=text]:focus,input[type=email]:focus,
-.inputBoxName:focus,.inputBoxNormal:focus,.inputBoxArea:focus,select:focus,textarea:focus{outline:none;border-color:#ff5a1f;box-shadow:0 0 0 3px rgba(255,90,31,.15)}
+.inputBoxName:focus,.inputBoxNormal:focus,.inputBoxArea:focus,select:focus,textarea:focus{outline:none;border-color:#D2000B;box-shadow:0 0 0 3px rgba(210,0,11,.15)}
 textarea{min-height:120px;resize:vertical}
 input[type=file]{padding:9px 11px;cursor:pointer}
 input[type=checkbox],input[type=radio]{width:auto;margin-right:8px}
 input[type=button]{background:#ffffff;color:#44444a;border:1px solid #c9c9cf;border-radius:6px;padding:10px 16px;font:600 13px/1 Arial,Helvetica,sans-serif;cursor:pointer;width:auto}
-input[type=button]:hover{border-color:#ff5a1f;color:#ff5a1f}
-input[type=submit],.submitButton{background:#ff5a1f;color:#ffffff;font:700 14px/1 Arial,Helvetica,sans-serif;letter-spacing:.4px;text-transform:uppercase;padding:14px 30px;border:none;border-radius:6px;cursor:pointer;width:auto}
-input[type=submit]:hover,.submitButton:hover{background:#e04a12}
+input[type=button]:hover{border-color:#D2000B;color:#D2000B}
+input[type=submit],.submitButton{background:#D2000B;color:#ffffff;font:700 14px/1 Arial,Helvetica,sans-serif;letter-spacing:.4px;text-transform:uppercase;padding:14px 30px;border:none;border-radius:6px;cursor:pointer;width:auto}
+input[type=submit]:hover,.submitButton:hover{background:#A80009}
 .instructions{color:#6b6b70;font-size:13px;font-style:italic}
-.req{color:#d8431a}
+.req{color:#D2000B}
 
 /* FOOTER */
 .site-footer{border-top:1px solid #e3e3e6;margin-top:40px;padding:34px 0;color:#6b6b70;font-size:14px}
 .site-footer a{color:#44444a}
-.site-footer a:hover{color:#ff5a1f}
+.site-footer a:hover{color:#D2000B}
 #poweredCATS{opacity:.55}
 #poweredCATS:hover{opacity:1}
 
@@ -113,7 +113,7 @@ input[type=submit]:hover,.submitButton:hover{background:#e04a12}
 
 INSERT INTO career_portal_template_site (career_portal_name, setting, value) VALUES ('WTF Gyms', 'Header', '
 <header class="site-header"><div class="wrap hdr">
-  <a class="brand" href="index.php"><span class="brand-mark">WTF</span><span class="brand-sub">Careers</span></a>
+  <a class="brand" href="index.php"><img src="/images/wtf-logo.png" alt="WTF" class="brand-logo" /><span class="brand-sub">Careers</span></a>
   <nav class="hdr-nav">
     <a href="index.php?m=careers&amp;p=showAll">All Openings</a>
     <a href="https://www.wtfgyms.com" target="_blank" rel="noopener noreferrer">wtfgyms.com</a>
