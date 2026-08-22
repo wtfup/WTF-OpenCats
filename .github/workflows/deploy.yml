@@ -95,3 +95,12 @@ jobs:
           set -euo pipefail
           chmod +x test/smoke/url-routing.sh
           test/smoke/url-routing.sh https://careers.wtfgyms.com
+
+      - name: ATS configuration contract
+        # Serving is not the same as being configured. An audit once found this
+        # system live but effectively unused -- no tags, lists, questionnaires
+        # or custom fields. This fails the deploy if that state returns.
+        run: |
+          set -euo pipefail
+          chmod +x test/smoke/ats-config.sh
+          test/smoke/ats-config.sh
