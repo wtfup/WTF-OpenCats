@@ -1,0 +1,94 @@
+# Deploy WTF-OpenCats to the production EC2 box.
+#
+# Auth is GitHub OIDC -> the wtf-opencats-deploy IAM role, so there is no AWS
+# key and no SSH key stored in this repo. The role can only SendCommand to the
+# single production instance.
+#
+# The instance pulls from GitHub itself; nothing is uploaded from the runner.
+
+name: Deploy to production
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  id-token: write   # required to request the OIDC token
+  contents: read
+
+env:
+  AWS_REGION: ap-south-1
+  INSTANCE_ID: i-0bc921f273f40cf6e
+
+jobs:
+  deploy:
+    name: Pull and restart on EC2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::246814138703:role/wtf-opencats-deploy
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Send deploy command
+        id: send
+        run: |
+          set -euo pipefail
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name AWS-RunShellScript \
+            --comment "Deploy ${GITHUB_SHA::7} from GitHub Actions" \
+            --parameters commands='[
+              "set -eu",
+              "cd /opt/opencats",
+              "git fetch --all --prune",
+              "git reset --hard origin/master",
+              "cd /opt/opencats/docker",
+              "docker compose -f docker-compose.prod.yml up -d --build",
+              "docker compose -f docker-compose.prod.yml ps"
+            ]' \
+            --query 'Command.CommandId' --output text)
+          echo "command_id=$COMMAND_ID" >> "$GITHUB_OUTPUT"
+          echo "Dispatched SSM command $COMMAND_ID"
+
+      - name: Wait for the deploy to finish
+        run: |
+          set -euo pipefail
+          CID='${{ steps.send.outputs.command_id }}'
+          for i in $(seq 1 60); do
+            STATUS=$(aws ssm get-command-invocation \
+              --command-id "$CID" --instance-id "$INSTANCE_ID" \
+              --query Status --output text 2>/dev/null || echo Pending)
+            echo "[$i] $STATUS"
+            case "$STATUS" in
+              Success|Failed|Cancelled|TimedOut) break ;;
+            esac
+            sleep 10
+          done
+
+          echo "--- stdout ---"
+          aws ssm get-command-invocation --command-id "$CID" --instance-id "$INSTANCE_ID" \
+            --query StandardOutputContent --output text || true
+          echo "--- stderr ---"
+          aws ssm get-command-invocation --command-id "$CID" --instance-id "$INSTANCE_ID" \
+            --query StandardErrorContent --output text || true
+
+          FINAL=$(aws ssm get-command-invocation --command-id "$CID" --instance-id "$INSTANCE_ID" \
+            --query Status --output text)
+          echo "final status: $FINAL"
+          # Anything that is not an outright Success fails the job, including a
+          # run still InProgress after 10 minutes.
+          [ "$FINAL" = "Success" ]
+
+      - name: Smoke test the live site
+        run: |
+          set -euo pipefail
+          CODE=$(curl -s -o /dev/null -w '%{http_code}' https://careers.wtfgyms.com/careers/)
+          echo "careers portal returned $CODE"
+          [ "$CODE" = "200" ]
