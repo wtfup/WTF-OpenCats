@@ -202,8 +202,16 @@ class Mailer
 
             if ($signature)
             {
-                $body .= '\n<br />\n<br /><span style=\"font-size: 10pt;\">Powered by <a href=\"http://www.opencats.org" alt=\"OpenCATS "
-                    . "Applicant Tracking System\">OpenCATS</a> (Free ATS)</span>';
+                /* This was a single-quoted string containing \n and \" escapes,
+                 * which single quotes never interpret, and its quoting broke
+                 * mid-expression. Recipients saw literal backslash-n and a
+                 * mangled anchor tag. Kept as one correctly-quoted string. The
+                 * CPL requires the "Powered by OpenCATS" text to be legible and
+                 * hyperlinked to opencats.org; it does not require "(Free ATS)". */
+                $body .= '<br /><br /><span style="font-size:10px;color:#8a8a8a;">'
+                    . 'Powered by <a href="http://www.opencats.org/" '
+                    . 'title="OpenCATS Applicant Tracking System" '
+                    . 'style="color:#8a8a8a;">OpenCATS</a></span>';
             }
 
             $this->_mailer->Body = '<div style="font: normal normal 12px Arial, Tahoma, sans-serif">'
@@ -215,7 +223,7 @@ class Mailer
         {
             if ($signature)
             {
-                $body .= "\n\nPowered by OpenCATS (http://www.opencats.org) Free ATS";
+                $body .= "\n\nPowered by OpenCATS - http://www.opencats.org/";
             }
 
             $this->_mailer->isHTML(false);
