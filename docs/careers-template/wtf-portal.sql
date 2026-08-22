@@ -242,7 +242,7 @@ INSERT INTO career_portal_template_site (career_portal_name, setting, value) VAL
   <div class="hero">
     <p class="eyebrow">Application received</p>
     <h1>Thanks &mdash; we have got it.</h1>
-    <p class="lede">Your application for <strong><title></strong> is in. Our hiring team reviews every application and will reach out directly if there is a fit. Please do not submit the same role twice.</p>
+    <p class="lede">Your application for <strong><title></strong> is in. A confirmation email is on its way from HR@wtfgyms.com &mdash; check your spam folder if you do not see it. Our hiring team reviews every application and will reach out if there is a fit.</p>
     <p><a class="btn" href="index.php?m=careers&amp;p=showAll">Browse more openings</a></p>
   </div>
 </div>
