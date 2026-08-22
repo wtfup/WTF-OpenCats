@@ -51,6 +51,7 @@ jobs:
               "git reset --hard origin/master",
               "cd /opt/opencats/docker",
               "docker compose -f docker-compose.prod.yml up -d --build",
+              "docker compose -f docker-compose.prod.yml up -d --force-recreate caddy",
               "docker compose -f docker-compose.prod.yml ps"
             ]' \
             --query 'Command.CommandId' --output text)
@@ -86,9 +87,11 @@ jobs:
           # run still InProgress after 10 minutes.
           [ "$FINAL" = "Success" ]
 
+      - name: Check out the repo for the smoke tests
+        uses: actions/checkout@v4
+
       - name: Smoke test the live site
         run: |
           set -euo pipefail
-          CODE=$(curl -s -o /dev/null -w '%{http_code}' https://careers.wtfgyms.com/careers/)
-          echo "careers portal returned $CODE"
-          [ "$CODE" = "200" ]
+          chmod +x test/smoke/url-routing.sh
+          test/smoke/url-routing.sh https://careers.wtfgyms.com
