@@ -126,7 +126,7 @@ INSERT INTO career_portal_template_site (career_portal_name, setting, value) VAL
 
 INSERT INTO career_portal_template_site (career_portal_name, setting, value) VALUES ('WTF Gyms', 'Footer', '
 <footer class="site-footer"><div class="wrap">
-  <p><strong style="color:#0f0f12;">WTF</strong> &mdash; eleven businesses, hiring across all of them.</p>
+  <p><strong style="color:#0f0f12;">WTF</strong> &mdash; eleven businesses. One place to apply to all of them.</p>
   <p>Every open role across the group is listed here. <a href="index.php?m=careers&amp;p=showAll">Browse openings</a> or visit <a href="https://www.wtfgyms.com" target="_blank" rel="noopener noreferrer">wtfgyms.com</a>.</p>
   <p style="margin-top:20px;font-size:13px;"><a href="/login">WTF staff login</a></p>
 </div></footer>
@@ -138,8 +138,8 @@ INSERT INTO career_portal_template_site (career_portal_name, setting, value) VAL
   <section class="hero">
     <p class="eyebrow">Careers at WTF</p>
     <h1>Eleven businesses. <span class="hl">One team.</span></h1>
-    <p class="lede">WTF is not a gym chain. We run eleven businesses under Witness the Fitness Private Limited &mdash; training floors, equipment, an academy, media, recovery, nutrition and more. Gyms are where we started, not the whole of what we do.</p>
-    <p class="lede">So the work here is not one kind of work. We hire trainers and physiotherapists, but also marketers, category managers, engineers and finance people.</p>
+    <p class="lede">Most people know WTF for the gyms. That is one of eleven businesses we run under Witness the Fitness Private Limited &mdash; training floors, equipment, an academy, media, recovery, nutrition, and the teams that hold it all together.</p>
+    <p class="lede">Which means the work here is not one kind of work. Trainers and physiotherapists, yes &mdash; and marketers, engineers, category managers, technicians and finance people alongside them. Pick the business that fits you.</p>
     <p>
       <a class="btn btn-lg" href="index.php?m=careers&amp;p=showAll">View open roles</a>
       <span class="stat"><span class="dot"></span><numberOfOpenPositions> positions open right now</span>
@@ -148,7 +148,7 @@ INSERT INTO career_portal_template_site (career_portal_name, setting, value) VAL
   <section class="section">
     <p class="eyebrow">The eleven</p>
     <ul class="verticals"><li>WTF Gyms</li><li>WTF Powered Gyms</li><li>WTF Franchisee Gyms</li><li>WTF Academy</li><li>WTF Amplify</li><li>WTF Reboot</li><li>WTF Go</li><li>WTF Metabolic</li><li>WTF Everyday</li><li>WTF Equipments</li><li>WTF Enterprise</li></ul>
-    <p class="muted">Every role on this board is tagged with the business it belongs to.</p>
+    <p class="muted">Every opening below is tagged with the business it sits in, so you can see exactly what you would be joining.</p>
   </section>
   <section class="section">
     <registeredLoginTitle><h2>Applied with us before?</h2></registeredLoginTitle><registeredLogin>
