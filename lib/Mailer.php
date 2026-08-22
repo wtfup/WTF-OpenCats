@@ -117,7 +117,7 @@ class Mailer
         $logMessage = true, $replyTo = array(), $wrapLinesAt = 78)
     {
         return $this->send(
-            array($this->_settings['fromAddress'], ''),
+            array($this->_settings['fromAddress'], $this->_settings['fromName']),
             array($recipient),
             $subject,
             $body,
@@ -152,7 +152,7 @@ class Mailer
         $logMessage = true, $replyTo = array(), $wrapLinesAt = 78)
     {
         return $this->send(
-            array($this->_settings['fromAddress'], ''),
+            array($this->_settings['fromAddress'], $this->_settings['fromName']),
             $recipients,
             $subject,
             $body,
@@ -427,6 +427,10 @@ class MailerSettings
 
         $settings = array(
             'fromAddress'       => 'noreply@yourdomain.com',
+            /* Display name on outgoing mail. Without it recipients see a bare
+             * address in the From column, which reads like machine output
+             * rather than correspondence from a company. */
+            'fromName'          => '',
             'configured'        => '0',
             'modeConfigurable'  => '1',
             'candidateJoborderStatusSendsMessage' => serialize($candidateJoborderStatusSendsMessage)
