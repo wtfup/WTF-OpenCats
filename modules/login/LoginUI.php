@@ -46,6 +46,19 @@ class LoginUI extends UserInterface
     public function handleRequest()
     {
         $action = $this->getAction();
+
+        /* An already-authenticated user has no business on the login screen.
+         * Worse, the login form carries no CSRF token, while index.php demands
+         * one on every POST from a logged-in session -- so submitting the form
+         * in that state always died with "Invalid request." rather than doing
+         * anything useful. Send them where they were trying to go instead. */
+        if ($action !== 'logout' && isset($_SESSION['CATS']) &&
+            $_SESSION['CATS']->isLoggedIn())
+        {
+            CATSUtility::transferRelativeURI('m=home');
+            return;
+        }
+
         switch ($action)
         {
             case 'attemptLogin':

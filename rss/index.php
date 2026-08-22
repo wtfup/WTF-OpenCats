@@ -34,6 +34,12 @@
 $rssPage = true;
 
 chdir('..');
+
+/* config.php is what defines LEGACY_ROOT. Without this include the very next
+ * line raises "Undefined constant LEGACY_ROOT" and the whole feed 500s, which
+ * is what the RSS link in the career portal footer was hitting. */
+require_once('./config.php');
+
 include_once(LEGACY_ROOT . '/lib/CATSUtility.php');
 include_once(CATSUtility::getIndexName());
 

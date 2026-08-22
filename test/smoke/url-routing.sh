@@ -65,6 +65,10 @@ expect /ats                    302 "alternate shortcut"       "m=login"
 expect /ats/                   302 "trailing-slash variant"   "m=login"
 
 echo
+echo "Public feeds must serve, not 500:"
+expect /rss/                   200 "job feed linked from the career portal footer"
+
+echo
 echo "Security blocks must stay closed:"
 expect /attachments/           404 "candidate resumes"
 expect /config.php             404 "database credentials"
