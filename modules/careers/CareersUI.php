@@ -1996,6 +1996,16 @@ class CareersUI extends UserInterface
             '%JBODID%',
             '%JBODCATSURL%'
         );
+
+        $catsScheme = (
+            (!empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off') ||
+            (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+             strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https') ||
+            (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443)
+        ) ? 'https://' : 'http://';
+        $catsBaseURL = $catsScheme . $_SERVER['HTTP_HOST']
+            . substr($uri, 0, strpos($uri, '?'));
+
         $replacementStrings = array(
             $firstName,
             $firstName . ' ' . $lastName,
@@ -2003,11 +2013,19 @@ class CareersUI extends UserInterface
             $jobOrderData['ownerFullName'],
             $jobOrderData['title'],
             $jobOrderData['companyName'],
-            '<a href="http://' . $_SERVER['HTTP_HOST'] . substr($uri, 0, strpos($uri, '?')) . '?m=candidates&amp;a=show&amp;candidateID=' . $candidateID . '">'.
-                'http://' . $_SERVER['HTTP_HOST'] . substr($uri, 0, strpos($uri, '?')) . '?m=candidates&amp;a=show&amp;candidateID=' . $candidateID . '</a>',
+            /* Emit a bare URL, not a pre-built <a> tag.
+             *
+             * These tokens used to expand to a whole anchor whose visible text
+             * was the raw URL. Any template that wrapped the token in its own
+             * link -- the natural thing to do when styling a button -- produced
+             * nested anchors, which browsers unwrap, dumping the href and the
+             * style attribute into the message as visible text.
+             *
+             * Scheme is derived rather than hardcoded to http, so recruiter mail
+             * does not carry links that only work via a redirect. */
+            $catsBaseURL . '?m=candidates&a=show&candidateID=' . $candidateID,
             $jobOrderData['jobOrderID'],
-            '<a href="http://' . $_SERVER['HTTP_HOST'] . substr($uri, 0, strpos($uri, '?')) . '?m=joborders&amp;a=show&amp;jobOrderID=' . $jobOrderData['jobOrderID'] . '">'.
-                'http://' . $_SERVER['HTTP_HOST'] . substr($uri, 0, strpos($uri, '?')) . '?m=joborders&amp;a=show&amp;jobOrderID=' . $jobOrderData['jobOrderID'] . '</a>',
+            $catsBaseURL . '?m=joborders&a=show&jobOrderID=' . $jobOrderData['jobOrderID'],
         );
         $candidatesEmailTemplate = str_replace(
             $stringsToFind,
