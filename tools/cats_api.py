@@ -186,6 +186,79 @@ class CatsClient:
         }
 
 
+    # --- generic form submit ----------------------------------------------
+
+    ERROR_RE = re.compile(
+        r"(Invalid [a-z ]+\.|Required fields are missing\.|"
+        r"Failed to (?:add|update) [a-z ]+\.)", re.I
+    )
+
+    def submit_form(self, module, action, marker, overrides,
+                    get_params=None, post_params=None):
+        """Round-trip a form: GET it, keep every existing value, apply
+        overrides, POST it back. OpenCATS handlers rewrite every column from
+        the POST, so a partial body silently blanks whatever it omits."""
+        get_params = get_params or {}
+        post_params = post_params or {}
+        page = self.get(module, action, **get_params)
+        fields = parse_form(page, must_contain=marker)
+        if not fields:
+            raise SystemExit(f"could not find a form containing {marker!r} "
+                             f"on {module}:{action}")
+        fields.update({k: str(v) for k, v in overrides.items()})
+        fields["csrfToken"] = self.csrf(page)
+        status, landed, html = self.post(module, action, fields, **post_params)
+        err = self.ERROR_RE.search(html)
+        return {
+            "http": status,
+            "url": landed,
+            "fatal": "Fatal error" in html,
+            "error": err.group(0) if err else None,
+        }
+
+    def edit_company(self, company_id, **overrides):
+        overrides["companyID"] = company_id
+        return self.submit_form(
+            "companies", "edit", "departmentsCSV", overrides,
+            get_params={"companyID": company_id},
+        )
+
+    # --- job orders --------------------------------------------------------
+
+    def add_joborder(self, company_id, title, city, state, department="",
+                     description="", openings=1, jobtype="H", public=True,
+                     country="IN", salary="", notes=""):
+        """Create a job order. public=True plus an Active status is what makes
+        it appear on the public career portal."""
+        return self.submit_form(
+            "joborders", "add", "title",
+            {
+                "companyID": company_id,
+                "title": title,
+                "city": city,
+                "state": state,
+                "country": country,
+                "department": department,
+                "description": description,
+                "notes": notes,
+                "openings": openings,
+                "type": jobtype,
+                "salary": salary,
+                "public": "on" if public else "",
+            },
+        )
+
+    def list_joborders(self):
+        html = self.get("joborders", "listByView", maxResults="200")
+        rows = re.findall(r'jobOrderID=(\d+)[^>]*>\s*([^<]+?)\s*</a>', html)
+        seen, out = set(), []
+        for jid, title in rows:
+            if jid not in seen:
+                seen.add(jid)
+                out.append({"jobOrderID": int(jid), "title": title.strip()})
+        return out
+
+
 class FormParser(HTMLParser):
     """Collect current values of every successful control, grouped per <form>.
 
@@ -323,6 +396,28 @@ def main():
     p = sub.add_parser("list-departments")
     p.add_argument("company_id", type=int)
 
+    p = sub.add_parser("edit-company")
+    p.add_argument("company_id", type=int)
+    p.add_argument("--city")
+    p.add_argument("--state")
+    p.add_argument("--address")
+    p.add_argument("--zip")
+    p.add_argument("--phone1")
+
+    p = sub.add_parser("add-joborder")
+    p.add_argument("company_id", type=int)
+    p.add_argument("title")
+    p.add_argument("--city", required=True)
+    p.add_argument("--state", default="")
+    p.add_argument("--department", default="")
+    p.add_argument("--description", default="")
+    p.add_argument("--openings", type=int, default=1)
+    p.add_argument("--type", dest="jobtype", default="H")
+    p.add_argument("--salary", default="")
+    p.add_argument("--private", action="store_true")
+
+    sub.add_parser("list-joborders")
+
     args = ap.parse_args()
 
     base = os.environ.get("CATS_URL")
@@ -345,6 +440,19 @@ def main():
     elif args.cmd == "list-departments":
         for d in c.list_departments(args.company_id):
             print(d)
+    elif args.cmd == "edit-company":
+        ov = {k: v for k, v in vars(args).items()
+              if k in ("city", "state", "address", "zip", "phone1") and v is not None}
+        print(c.edit_company(args.company_id, **ov))
+    elif args.cmd == "add-joborder":
+        print(c.add_joborder(
+            args.company_id, args.title, args.city, args.state,
+            department=args.department, description=args.description,
+            openings=args.openings, jobtype=args.jobtype,
+            salary=args.salary, public=not args.private))
+    elif args.cmd == "list-joborders":
+        for row in c.list_joborders():
+            print(f"{row['jobOrderID']:>4}  {row['title']}")
 
 
 if __name__ == "__main__":
