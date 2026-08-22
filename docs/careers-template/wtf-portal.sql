@@ -48,6 +48,8 @@ p{margin:0 0 12px 0}
 .dot{width:8px;height:8px;border-radius:50%;background:#12a150;display:inline-block}
 
 .section{padding:44px 0}
+.verticals{list-style:none;margin:0 0 16px 0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+.verticals li{background:#f4f4f5;border:1px solid #e3e3e6;border-radius:999px;padding:9px 16px;font-size:14px;font-weight:600;color:#3d3d42}
 .page-head{padding:44px 0 22px 0}
 .crumb{padding:26px 0 0 0;font-size:14px}
 .card{background:#fafafa;border:1px solid #e3e3e6;border-radius:10px;padding:26px;margin:0 0 22px 0}
@@ -124,8 +126,8 @@ INSERT INTO career_portal_template_site (career_portal_name, setting, value) VAL
 
 INSERT INTO career_portal_template_site (career_portal_name, setting, value) VALUES ('WTF Gyms', 'Footer', '
 <footer class="site-footer"><div class="wrap">
-  <p><strong style="color:#0f0f12;">WTF Gyms</strong> &mdash; we are hiring across every centre.</p>
-  <p>All open roles are listed on this page. <a href="index.php?m=careers&amp;p=showAll">Browse openings</a> or visit <a href="https://www.wtfgyms.com" target="_blank" rel="noopener noreferrer">wtfgyms.com</a>.</p>
+  <p><strong style="color:#0f0f12;">WTF</strong> &mdash; eleven businesses, hiring across all of them.</p>
+  <p>Every open role across the group is listed here. <a href="index.php?m=careers&amp;p=showAll">Browse openings</a> or visit <a href="https://www.wtfgyms.com" target="_blank" rel="noopener noreferrer">wtfgyms.com</a>.</p>
   <p style="margin-top:20px;font-size:13px;"><a href="/login">WTF staff login</a></p>
 </div></footer>
 ');
@@ -134,13 +136,19 @@ INSERT INTO career_portal_template_site (career_portal_name, setting, value) VAL
 <div id="careerContent" class="wrap">
   <registeredCandidate>
   <section class="hero">
-    <p class="eyebrow">Careers at <siteName></p>
-    <h1>Build India&#39;s <span class="hl">fittest</span> future.</h1>
-    <p class="lede">We are hiring across our gyms &mdash; trainers, floor managers, sales, and the people who keep every centre running. If you take fitness seriously, there is a place for you here.</p>
+    <p class="eyebrow">Careers at WTF</p>
+    <h1>Eleven businesses. <span class="hl">One team.</span></h1>
+    <p class="lede">WTF is not a gym chain. We run eleven businesses under Witness the Fitness Private Limited &mdash; training floors, equipment, an academy, media, recovery, nutrition and more. Gyms are where we started, not the whole of what we do.</p>
+    <p class="lede">So the work here is not one kind of work. We hire trainers and physiotherapists, but also marketers, category managers, engineers and finance people.</p>
     <p>
       <a class="btn btn-lg" href="index.php?m=careers&amp;p=showAll">View open roles</a>
       <span class="stat"><span class="dot"></span><numberOfOpenPositions> positions open right now</span>
     </p>
+  </section>
+  <section class="section">
+    <p class="eyebrow">The eleven</p>
+    <ul class="verticals"><li>WTF Gyms</li><li>WTF Powered Gyms</li><li>WTF Franchisee Gyms</li><li>WTF Academy</li><li>WTF Amplify</li><li>WTF Reboot</li><li>WTF Go</li><li>WTF Metabolic</li><li>WTF Everyday</li><li>WTF Equipments</li><li>WTF Enterprise</li></ul>
+    <p class="muted">Every role on this board is tagged with the business it belongs to.</p>
   </section>
   <section class="section">
     <registeredLoginTitle><h2>Applied with us before?</h2></registeredLoginTitle><registeredLogin>
